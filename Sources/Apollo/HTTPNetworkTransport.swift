@@ -206,10 +206,20 @@ public class HTTPNetworkTransport: NetworkTransport {
       }
       return ["id": operationIdentifier, "variables": operation.variables]
     }
-    var body: GraphQLMap = ["variables": operation.variables]
+
+    var body: GraphQLMap = [:]
+
+    if !withAPQ {
+        body["variables"] = operation.variables
+    }
+    else if let variables = operation.variables, variables.count > 0 {
+        body["variables"] = variables
+    }
+
     if withQuery {
       body["query"] = operation.queryDocument
     }
+
     if withAPQ {
       body["extensions"] = ["persistedQuery": ["version": 1, "sha256Hash": sha256DigestAsHex(str: operation.queryDocument)]]
     }

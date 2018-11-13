@@ -210,6 +210,36 @@ class LoadQueryFromStoreTests: XCTestCase {
     }
   }
   
+  
+  func testLoadingWithBadCacheSerialization() throws {
+    let initialRecords: RecordSet = [
+      "QUERY_ROOT": ["hero": Reference(key: "2001")],
+      "2001": [
+        "name": "R2-D2",
+        "__typename": "Droid",
+        "friends": [
+          Reference(key: "1000"),
+          Reference(key: "1002"),
+          Reference(key: "1003")
+        ]
+      ],
+      "1000": ["__typename": "Human", "name": ["dictionary": "badValues", "nested bad val": ["subdictionary": "some value"] ]
+      ],
+      "1002": ["__typename": "Human", "name": "Han Solo"],
+      "1003": ["__typename": "Human", "name": "Leia Organa"],
+      ]
+    
+    withCache(initialRecords: initialRecords) { (cache) in
+      store = ApolloStore(cache: cache)
+      
+      let query = HeroAndFriendsNamesQuery()
+      load(query: query) { (result, error) in
+        XCTAssertNil(result)
+        XCTAssertNotNil(error)
+      }
+    }
+  }
+  
   // MARK: - Helpers
   
   private func load<Query: GraphQLQuery>(query: Query, resultHandler: @escaping OperationResultHandler<Query>) {

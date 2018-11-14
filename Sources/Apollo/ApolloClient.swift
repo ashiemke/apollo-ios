@@ -143,8 +143,8 @@ public class ApolloClient {
         resultHandler(result, error)
       }
     }
-    
-    return networkTransport.send(operation: operation) { (response, error) in
+
+    return networkTransport.send(operation: operation, optimistic: true) { (response, error) in
       guard let response = response else {
         notifyResultHandler(result: nil, error: error)
         return

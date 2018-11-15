@@ -59,7 +59,7 @@ public class WebSocketTransport: NetworkTransport, WebSocketDelegate {
     self.websocket.connect()
   }
   
-  public func send<Operation>(operation: Operation, completionHandler: @escaping (_ response: GraphQLResponse<Operation>?, _ error: Error?) -> Void) -> Cancellable {
+public func send<Operation>(operation: Operation, optimistic: Bool, completionHandler: @escaping (GraphQLResponse<Operation>?, Error?) -> Void) -> Cancellable where Operation : GraphQLOperation {
     if let error = self.error {
       completionHandler(nil,error)
     }
